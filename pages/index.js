@@ -4,55 +4,48 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div style={{
-      backgroundColor: "black",
-      color: "white",
-      minHeight: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      padding: 20,
-      textAlign: "center"
-    }}>
-      
-      <h1 style={{ fontSize: 36 }}>🎬 Stranger Things Finale Screening</h1>
-
-      <p style={{ marginTop: 10 }}>📍 VMRDA Children’s Arena</p>
-      <p>🕙 10 AM – 1 PM</p>
-      <p>📅 01/01/2026</p>
-      <p>🎟 Entry Fee: ₹157</p>
-
-      {/* Poster image */}
-      <img
-        src="/poster.jpg"
-        alt="Stranger Things Poster"
+    <div
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        backgroundImage: "url('/poster.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Dark overlay */}
+      <div
         style={{
-          width: "300px",
-          marginTop: 20,
-          borderRadius: 10
+          position: "absolute",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.4)",
         }}
       />
 
+      {/* Book Now Button */}
       <button
         onClick={() => router.push("/book")}
         style={{
-          marginTop: 30,
-          padding: "15px 40px",
-          fontSize: 18,
-          background: "#e50914",
+          position: "absolute",
+          bottom: "40px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          padding: "16px 48px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          backgroundColor: "#e50914",
           color: "white",
           border: "none",
-          borderRadius: 8,
-          cursor: "pointer"
+          borderRadius: "8px",
+          cursor: "pointer",
+          zIndex: 2,
+          boxShadow: "0 0 20px rgba(229,9,20,0.6)",
         }}
       >
         BOOK NOW
       </button>
-
-      <p style={{ marginTop: 15, fontSize: 12 }}>
-        🍿 Snacks available for sale
-      </p>
     </div>
   );
 }
