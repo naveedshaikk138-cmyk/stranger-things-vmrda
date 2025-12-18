@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+const ROWS = 26; // A–Z
+const SEATS_PER_ROW = 27;
+const PRICE = 157;
+const MAX_SELECTION = 6;
 
 export default function Book() {
-  const rows = 17;
-  const cols = 27;
-  const price = 157;
-  const maxSeats = 6;
-
   const [selectedSeats, setSelectedSeats] = useState([]);
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
+  const rows = Array.from({ length: ROWS }, (_, i) =>
+    Array.from(
+      { length: SEATS_PER_ROW },
+      (_, j) => `${String.fromCharCode(65 + i)}${j + 1}`
+    )
+  );
 
   const toggleSeat = (seat) => {
     if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter(s => s !== seat));
+      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
     } else {
-      if (selectedSeats.length >= maxSeats) {
+      if (selectedSeats.length >= MAX_SELECTION) {
         alert("Maximum 6 seats allowed");
         return;
       }
@@ -27,88 +27,151 @@ export default function Book() {
     }
   };
 
-  const payNow = () => {
-    if (selectedSeats.length === 0) {
-      alert("Select at least one seat");
-      return;
-    }
-
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-      amount: selectedSeats.length * price * 100,
-      currency: "INR",
-      name: "Stranger Things Finale Screening",
-      description: "VMRDA Children's Arena",
-      handler: function (response) {
-        alert("Payment Successful\nPayment ID: " + response.razorpay_payment_id);
-      },
-      theme: { color: "#e50914" }
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+  const getCurveOffset = (rowIndex) => {
+    const center = Math.floor(ROWS / 2);
+    return Math.abs(center - rowIndex) * 6;
   };
 
   return (
-    <div style={{ background: "black", color: "white", minHeight: "100vh", padding: 20 }}>
-      <h1 style={{ textAlign: "center" }}>🎟 Select Your Seats</h1>
-      <p style={{ textAlign: "center" }}>₹157 per seat | Max 6 seats</p>
+    <div className="wrapper">
+      <h1>✏️ Select Your Seats</h1>
+      <p className="price">
+        ₹{PRICE} per seat | Max {MAX_SELECTION} seats
+      </p>
 
-      <p style={{ textAlign: "center", marginTop: 20 }}>🎥 SCREEN THIS SIDE</p>
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gap: 6,
-        marginTop: 20,
-        overflowX: "auto"
-      }}>
-        {Array.from({ length: rows * cols }).map((_, i) => {
-          const row = String.fromCharCode(65 + Math.floor(i / cols));
-          const num = (i % cols) + 1;
-          const seat = `${row}${num}`;
-          const selected = selectedSeats.includes(seat);
-
-          return (
-            <button
-              key={seat}
-              onClick={() => toggleSeat(seat)}
-              style={{
-                padding: 8,
-                fontSize: 11,
-                background: selected ? "#e50914" : "#444",
-                color: "white",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer"
-              }}
-            >
-              {seat}
-            </button>
-          );
-        })}
+      {/* SCREEN */}
+      <div className="screen">
+        <span>SCREEN THIS SIDE</span>
       </div>
 
-      <div style={{ marginTop: 30, textAlign: "center" }}>
+      {/* SEATS */}
+      <div className="seating">
+        {rows.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className="row"
+            style={{
+              marginBottom:
+                rowIndex === 7 || rowIndex === 18 ? "45px" : "8px",
+              transform: `translateX(${getCurveOffset(rowIndex)}px)`
+            }}
+          >
+            {row.map((seat) => (
+              <button
+                key={seat}
+                className={`seat ${
+                  selectedSeats.includes(seat) ? "selected" : ""
+                }`}
+                onClick={() => toggleSeat(seat)}
+              >
+                {seat}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* SUMMARY */}
+      <div className="summary">
         <p>Selected: {selectedSeats.join(", ") || "None"}</p>
-        <h2>Total: ₹{selectedSeats.length * price}</h2>
-
-        <button
-          onClick={payNow}
-          style={{
-            marginTop: 15,
-            padding: "12px 30px",
-            fontSize: 16,
-            background: "#e50914",
-            color: "white",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer"
-          }}
-        >
-          Pay Now
-        </button>
+        <h2>Total: ₹{selectedSeats.length * PRICE}</h2>
+        <button className="payBtn">Pay Now</button>
       </div>
+
+      <style jsx>{`
+        .wrapper {
+          min-height: 100vh;
+          background: black;
+          color: white;
+          text-align: center;
+          padding: 20px;
+        }
+
+        h1 {
+          margin-bottom: 5px;
+        }
+
+        .price {
+          color: #ccc;
+          margin-bottom: 15px;
+        }
+
+        .screen {
+          width: 70%;
+          margin: 0 auto 25px;
+          padding: 10px;
+          background: #222;
+          border-radius: 0 0 40px 40px;
+          transform: perspective(300px) rotateX(-8deg);
+        }
+
+        .screen span {
+          font-size: 14px;
+          letter-spacing: 2px;
+          color: #aaa;
+        }
+
+        .seating {
+          overflow-x: auto;
+          padding-bottom: 20px;
+        }
+
+        .row {
+          display: flex;
+          justify-content: center;
+        }
+
+        .seat {
+          width: 38px;
+          height: 32px;
+          margin: 3px;
+          font-size: 10px;
+          background: #444;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .seat:hover {
+          background: #666;
+        }
+
+        .seat.selected {
+          background: red;
+        }
+
+        .summary {
+          margin-top: 25px;
+        }
+
+        .payBtn {
+          margin-top: 10px;
+          padding: 12px 40px;
+          font-size: 16px;
+          background: red;
+          color: white;
+          border: none;
+          border-radius: 30px;
+          cursor: pointer;
+        }
+
+        .payBtn:hover {
+          background: darkred;
+        }
+
+        @media (max-width: 768px) {
+          .seat {
+            width: 32px;
+            height: 28px;
+            font-size: 9px;
+          }
+
+          .screen {
+            width: 90%;
+          }
+        }
+      `}</style>
     </div>
   );
 }
