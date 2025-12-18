@@ -6,10 +6,11 @@ export default function Home() {
   return (
     <div className="page">
       <button
-        className="posterBtn"
+        className="bookBtn"
         onClick={() => router.push("/book")}
-        aria-label="Book Your Seats Now"
-      />
+      >
+        BOOK NOW
+      </button>
 
       <style jsx>{`
         .page {
@@ -17,31 +18,33 @@ export default function Home() {
           height: 100vh;
           background-color: black;
 
-          /* DESKTOP POSTER */
+          /* Desktop poster */
           background-image: url("/poster-desktop.jpg.png");
           background-repeat: no-repeat;
-          background-position: center center;
+          background-position: center;
           background-size: contain;
 
           position: relative;
         }
 
-        .posterBtn {
+        .bookBtn {
           position: absolute;
+          bottom: 8%;
           left: 50%;
           transform: translateX(-50%);
-          bottom: 11%;
-          width: 55%;
-          max-width: 420px;
-          height: 64px;
-          background: transparent;
+          padding: 14px 40px;
+          font-size: 18px;
+          font-weight: bold;
+
+          background: red;
+          color: white;
           border: none;
+          border-radius: 30px;
           cursor: pointer;
         }
 
-        .posterBtn:hover {
-          box-shadow: 0 0 25px rgba(255, 80, 0, 0.6);
-          border-radius: 40px;
+        .bookBtn:hover {
+          background: darkred;
         }
 
         /* 📱 MOBILE */
@@ -50,10 +53,10 @@ export default function Home() {
             background-image: url("/poster-mobile.jpg.jpeg");
           }
 
-          .posterBtn {
-            bottom: 13%;
-            width: 75%;
-            height: 58px;
+          .bookBtn {
+            bottom: 10%;
+            font-size: 16px;
+            padding: 12px 32px;
           }
         }
       `}</style>
