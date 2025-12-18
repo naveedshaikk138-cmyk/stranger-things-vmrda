@@ -5,69 +5,11 @@ export default function Home() {
 
   return (
     <div className="page">
-      <button className="bookBtn" onClick={() => router.push("/book")}>
-        BOOK NOW
-      </button>
-
-      <style jsx>{`
-        .page {
-          width: 100vw;
-          height: 100vh;
-          background-color: black;
-          background-image: url("/poster-desktop.jpg.png");
-          background-repeat: no-repeat;
-          background-position: center center;
-          background-size: contain;
-          position: relative;
-        }
-
-        .bookBtn {
-          position: absolute;
-          bottom: 8%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 14px 42px;
-          font-size: 18px;
-          font-weight: bold;
-          background: red;
-          color: white;
-          border: none;
-          border-radius: 30px;
-          cursor: pointer;
-        }
-
-        .bookBtn:hover {
-          background: darkred;
-        }
-
-        /* MOBILE */
-        @media (max-width: 768px) {
-          .page {
-            background-image: url("/poster-mobile.jpg.png");
-            background-size: contain;
-          }
-
-          .bookBtn {
-            bottom: 10%;
-            font-size: 16px;
-            padding: 12px 32px;
-          }
-        }
-      `}</style>
-    </div>
-  );
-}import { useRouter } from "next/router";
-
-export default function Home() {
-  const router = useRouter();
-
-  return (
-    <div className="page">
-      {/* Invisible clickable area over poster button */}
+      {/* Invisible clickable area on poster button */}
       <button
         className="posterBtn"
         onClick={() => router.push("/book")}
-        aria-label="Book Your Seats"
+        aria-label="Book Your Seats Now"
       />
 
       <style jsx>{`
@@ -75,25 +17,30 @@ export default function Home() {
           width: 100vw;
           height: 100vh;
           background-color: black;
+
+          /* Desktop poster */
+          background-image: url("/poster-desktop.png");
           background-repeat: no-repeat;
-          background-position: center;
+          background-position: center center;
           background-size: contain;
+
           position: relative;
-          background-image: url("/index-poster-desktop.jpg");
         }
 
         /*
-          Clickable area positioned
-          over "BOOK YOUR SEATS NOW!" in poster
+          This button sits exactly on top of
+          "BOOK YOUR SEATS NOW!" in the poster
         */
         .posterBtn {
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
           bottom: 11%;
+
           width: 55%;
           max-width: 420px;
           height: 64px;
+
           background: transparent;
           border: none;
           cursor: pointer;
@@ -108,7 +55,7 @@ export default function Home() {
         /* 📱 MOBILE */
         @media (max-width: 768px) {
           .page {
-            background-image: url("/index-poster-mobile.jpg");
+            background-image: url("/poster-mobile.jpeg");
           }
 
           .posterBtn {
