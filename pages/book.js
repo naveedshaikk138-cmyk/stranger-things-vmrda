@@ -1,19 +1,15 @@
 import { useState } from "react";
 
-const ROWS = 20; // A-T
+const TOTAL_ROWS = 20; // A–T
 const SEATS_PER_ROW = 30;
 const PRICE = 157;
 const MAX_SELECTION = 6;
 
+// Vertical aisles AFTER these seat numbers (1-based)
+const AISLE_AFTER_SEATS = [8, 19];
+
 export default function Book() {
   const [selectedSeats, setSelectedSeats] = useState([]);
-
-  const rows = Array.from({ length: ROWS }, (_, i) =>
-    Array.from(
-      { length: SEATS_PER_ROW },
-      (_, j) => `${String.fromCharCode(65 + i)}${j + 1}`
-    )
-  );
 
   const toggleSeat = (seat) => {
     if (selectedSeats.includes(seat)) {
@@ -27,47 +23,46 @@ export default function Book() {
     }
   };
 
-  // Natural curve using scale (NOT shifting)
-  const getRowScale = (rowIndex) => {
-    const center = Math.floor(ROWS / 2);
-    return 1 - Math.abs(center - rowIndex) * 0.005;
-  };
-
   return (
     <div className="wrapper">
-      <h1>✏️ Select Your Seats</h1>
+      <h1>🎟 Select Your Seats</h1>
       <p className="price">₹{PRICE} per seat | Max {MAX_SELECTION} seats</p>
 
       {/* SCREEN */}
-      <div className="screen">
-        <span>SCREEN THIS SIDE</span>
-      </div>
+      <div className="screen">SCREEN THIS SIDE</div>
 
       {/* SEATING */}
       <div className="seating">
-        {rows.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="row"
-            style={{
-              marginBottom:
-                rowIndex === 7 || rowIndex === 18 ? "60px" : "10px",
-              transform: `scaleX(${getRowScale(rowIndex)})`
-            }}
-          >
-            {row.map((seat) => (
-              <button
-                key={seat}
-                className={`seat ${
-                  selectedSeats.includes(seat) ? "selected" : ""
-                }`}
-                onClick={() => toggleSeat(seat)}
-              >
-                {seat}
-              </button>
-            ))}
-          </div>
-        ))}
+        {Array.from({ length: TOTAL_ROWS }).map((_, rowIndex) => {
+          const rowLabel = String.fromCharCode(65 + rowIndex);
+
+          return (
+            <div className="row" key={rowLabel}>
+              {Array.from({ length: SEATS_PER_ROW }).map((_, seatIndex) => {
+                const seatNumber = seatIndex + 1;
+                const seat = `${rowLabel}${seatNumber}`;
+
+                return (
+                  <div key={seat} className="seatWrapper">
+                    <button
+                      className={`seat ${
+                        selectedSeats.includes(seat) ? "selected" : ""
+                      }`}
+                      onClick={() => toggleSeat(seat)}
+                    >
+                      {seat}
+                    </button>
+
+                    {/* VERTICAL AISLE */}
+                    {AISLE_AFTER_SEATS.includes(seatNumber) && (
+                      <div className="aisle-vertical" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
 
       {/* SUMMARY */}
@@ -92,15 +87,12 @@ export default function Book() {
         }
 
         .screen {
-          width: 80%;
+          width: 85%;
           margin: 0 auto 35px;
           padding: 12px;
           background: #222;
-          border-radius: 0 0 50px 50px;
+          border-radius: 0 0 60px 60px;
           transform: perspective(400px) rotateX(-10deg);
-        }
-
-        .screen span {
           font-size: 13px;
           letter-spacing: 2px;
           color: #aaa;
@@ -108,13 +100,18 @@ export default function Book() {
 
         .seating {
           overflow-x: auto;
-          padding-bottom: 20px;
+          padding-bottom: 30px;
         }
 
         .row {
           display: flex;
           justify-content: center;
-          transform-origin: center;
+          margin-bottom: 10px;
+        }
+
+        .seatWrapper {
+          display: flex;
+          align-items: center;
         }
 
         .seat {
@@ -135,6 +132,10 @@ export default function Book() {
 
         .seat.selected {
           background: red;
+        }
+
+        .aisle-vertical {
+          width: 30px; /* WALKING SPACE */
         }
 
         .summary {
@@ -161,6 +162,9 @@ export default function Book() {
             width: 32px;
             height: 28px;
             font-size: 9px;
+          }
+          .aisle-vertical {
+            width: 22px;
           }
           .screen {
             width: 95%;
