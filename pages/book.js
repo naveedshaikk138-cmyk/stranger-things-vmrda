@@ -6,7 +6,7 @@ const PRICE = 157;
 const MAX_SELECTION = 6;
 
 // Vertical aisles AFTER these seat numbers (1-based)
-const AISLE_AFTER_SEATS = [8, 19];
+const AISLE_AFTER_SEATS = [8, 22];
 
 export default function Book() {
   const [selectedSeats, setSelectedSeats] = useState([]);
