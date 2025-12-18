@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-const ROWS = 26; // A–Z
-const SEATS_PER_ROW = 27;
+const ROWS = 20; // A-T
+const SEATS_PER_ROW = 30;
 const PRICE = 157;
 const MAX_SELECTION = 6;
 
@@ -27,24 +27,23 @@ export default function Book() {
     }
   };
 
-  const getCurveOffset = (rowIndex) => {
+  // Natural curve using scale (NOT shifting)
+  const getRowScale = (rowIndex) => {
     const center = Math.floor(ROWS / 2);
-    return Math.abs(center - rowIndex) * 6;
+    return 1 - Math.abs(center - rowIndex) * 0.005;
   };
 
   return (
     <div className="wrapper">
       <h1>✏️ Select Your Seats</h1>
-      <p className="price">
-        ₹{PRICE} per seat | Max {MAX_SELECTION} seats
-      </p>
+      <p className="price">₹{PRICE} per seat | Max {MAX_SELECTION} seats</p>
 
       {/* SCREEN */}
       <div className="screen">
         <span>SCREEN THIS SIDE</span>
       </div>
 
-      {/* SEATS */}
+      {/* SEATING */}
       <div className="seating">
         {rows.map((row, rowIndex) => (
           <div
@@ -52,8 +51,8 @@ export default function Book() {
             className="row"
             style={{
               marginBottom:
-                rowIndex === 7 || rowIndex === 18 ? "45px" : "8px",
-              transform: `translateX(${getCurveOffset(rowIndex)}px)`
+                rowIndex === 7 || rowIndex === 18 ? "60px" : "10px",
+              transform: `scaleX(${getRowScale(rowIndex)})`
             }}
           >
             {row.map((seat) => (
@@ -87,26 +86,22 @@ export default function Book() {
           padding: 20px;
         }
 
-        h1 {
-          margin-bottom: 5px;
-        }
-
         .price {
-          color: #ccc;
+          color: #bbb;
           margin-bottom: 15px;
         }
 
         .screen {
-          width: 70%;
-          margin: 0 auto 25px;
-          padding: 10px;
+          width: 80%;
+          margin: 0 auto 35px;
+          padding: 12px;
           background: #222;
-          border-radius: 0 0 40px 40px;
-          transform: perspective(300px) rotateX(-8deg);
+          border-radius: 0 0 50px 50px;
+          transform: perspective(400px) rotateX(-10deg);
         }
 
         .screen span {
-          font-size: 14px;
+          font-size: 13px;
           letter-spacing: 2px;
           color: #aaa;
         }
@@ -119,6 +114,7 @@ export default function Book() {
         .row {
           display: flex;
           justify-content: center;
+          transform-origin: center;
         }
 
         .seat {
@@ -142,11 +138,11 @@ export default function Book() {
         }
 
         .summary {
-          margin-top: 25px;
+          margin-top: 30px;
         }
 
         .payBtn {
-          margin-top: 10px;
+          margin-top: 12px;
           padding: 12px 40px;
           font-size: 16px;
           background: red;
@@ -166,9 +162,8 @@ export default function Book() {
             height: 28px;
             font-size: 9px;
           }
-
           .screen {
-            width: 90%;
+            width: 95%;
           }
         }
       `}</style>
