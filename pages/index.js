@@ -4,73 +4,84 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div>
+    <div className="container">
       {/* Desktop Poster */}
-      <div className="desktop">
-        <div className="poster desktopPoster">
-          <button onClick={() => router.push("/book")} className="btn">
-            BOOK NOW
-          </button>
-        </div>
-      </div>
+      <img
+        src="/poster-desktop.jpg.png"
+        className="poster desktop"
+        alt="Stranger Things Watch Party"
+      />
 
       {/* Mobile Poster */}
-      <div className="mobile">
-        <div className="poster mobilePoster">
-          <button onClick={() => router.push("/book")} className="btn">
-            BOOK NOW
-          </button>
-        </div>
-      </div>
+      <img
+        src="/poster-mobile.jpg.png"
+        className="poster mobile"
+        alt="Stranger Things Watch Party Mobile"
+      />
+
+      {/* Book Now Button */}
+      <button
+        className="bookBtn"
+        onClick={() => router.push("/book")}
+      >
+        BOOK NOW
+      </button>
 
       <style jsx>{`
-        .poster {
+        .container {
+          position: relative;
           width: 100vw;
           height: 100vh;
-          background-position: center;
-          background-repeat: no-repeat;
-          background-size: contain;
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          background-color: black;
+          overflow: hidden;
         }
 
-        .desktopPoster {
-          background-image: url("/poster-desktop.jpg");
-        }
-
-        .mobilePoster {
-          background-image: url("/poster-mobile.jpg");
-        }
-
-        .btn {
-          margin-bottom: 40px;
-          padding: 16px 48px;
-          font-size: 18px;
-          font-weight: bold;
-          background-color: #e50914;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          box-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
-        }
-
-        .mobile {
-          display: none;
+        .poster {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .desktop {
           display: block;
         }
 
+        .mobile {
+          display: none;
+        }
+
+        .bookBtn {
+          position: absolute;
+          bottom: 8%;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 14px 40px;
+          font-size: 18px;
+          font-weight: bold;
+          background: red;
+          color: white;
+          border: none;
+          border-radius: 30px;
+          cursor: pointer;
+          z-index: 10;
+        }
+
+        .bookBtn:hover {
+          background: darkred;
+        }
+
+        /* Mobile View */
         @media (max-width: 768px) {
           .desktop {
             display: none;
           }
           .mobile {
             display: block;
+          }
+
+          .bookBtn {
+            bottom: 10%;
+            font-size: 16px;
+            padding: 12px 30px;
           }
         }
       `}</style>
