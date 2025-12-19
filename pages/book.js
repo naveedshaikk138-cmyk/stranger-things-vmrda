@@ -1,216 +1,115 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 
-const ROWS = 20; // A to T
-const SEATS_PER_ROW = 30;
+const ROWS = "ABCDEFGHIJKLMNOPQRST".split("");
+const SEATS = 30;
 const PRICE = 157;
-const MAX_SEATS = 6;
-
-// Vertical aisles after these seat numbers
-const AISLE_AFTER = [8, 22];
 
 export default function Book() {
-  const [selectedSeats, setSelectedSeats] = useState([]);
+  const router = useRouter();
+  const [selected, setSelected] = useState([]);
 
   const toggleSeat = (seat) => {
-    if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
-      return;
+    if (selected.includes(seat)) {
+      setSelected(selected.filter((s) => s !== seat));
+    } else {
+      if (selected.length >= 6) return;
+      setSelected([...selected, seat]);
     }
-
-    if (selectedSeats.length >= MAX_SEATS) {
-      alert("Maximum 6 seats allowed");
-      return;
-    }
-
-    setSelectedSeats([...selectedSeats, seat]);
   };
 
-  const handlePay = () => {
-    if (selectedSeats.length === 0) {
-      alert("Please select at least one seat");
-      return;
-    }
+  const proceedToPayment = () => {
+    if (selected.length === 0) return;
 
     localStorage.setItem(
       "booking",
       JSON.stringify({
-        seats: selectedSeats,
-        total: selectedSeats.length * PRICE,
+        seats: selected,
+        total: selected.length * PRICE,
       })
     );
 
-    window.location.href = "/payment";
+    router.push("/payment");
   };
 
   return (
     <div className="page">
       <h1>Select Your Seats</h1>
-      <p className="price">₹{PRICE} per seat • Max {MAX_SEATS} seats</p>
 
-      {/* SCREEN */}
-      <div className="screen">SCREEN THIS SIDE</div>
-
-      {/* SCROLLABLE SEAT AREA */}
-      <div className="seatViewport">
-        <div className="seating">
-          {Array.from({ length: ROWS }).map((_, rowIndex) => {
-            const rowLetter = String.fromCharCode(65 + rowIndex);
-
-            return (
-              <div className="row" key={rowLetter}>
-                {Array.from({ length: SEATS_PER_ROW }).map((_, seatIndex) => {
-                  const seatNumber = seatIndex + 1;
-                  const seatId = `${rowLetter}${seatNumber}`;
-
-                  return (
-                    <div className="seatWrapper" key={seatId}>
-                      <button
-                        className={`seat ${
-                          selectedSeats.includes(seatId) ? "selected" : ""
-                        }`}
-                        onClick={() => toggleSeat(seatId)}
-                      >
-                        {seatId}
-                      </button>
-
-                      {AISLE_AFTER.includes(seatNumber) && (
-                        <div className="aisle" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+      <div className="seats">
+        {ROWS.map((row) => (
+          <div className="row" key={row}>
+            {Array.from({ length: SEATS }).map((_, i) => {
+              const seat = `${row}${i + 1}`;
+              const isSelected = selected.includes(seat);
+              return (
+                <button
+                  key={seat}
+                  className={`seat ${isSelected ? "selected" : ""}`}
+                  onClick={() => toggleSeat(seat)}
+                >
+                  {seat}
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
-      {/* SUMMARY */}
-      <div className="summary">
-        <p>
-          Selected:{" "}
-          {selectedSeats.length > 0
-            ? selectedSeats.join(", ")
-            : "None"}
-        </p>
-        <h2>Total: ₹{selectedSeats.length * PRICE}</h2>
-        <button className="payBtn" onClick={handlePay}>
+      <div className="footer">
+        <p>Selected: {selected.join(", ") || "None"}</p>
+        <p>Total: ₹{selected.length * PRICE}</p>
+
+        <button
+          className="pay"
+          disabled={selected.length === 0}
+          onClick={proceedToPayment}
+        >
           Pay Now
         </button>
       </div>
 
       <style jsx>{`
         .page {
-          min-height: 100vh;
           background: black;
           color: white;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px;
+          min-height: 100vh;
+          padding: 20px;
         }
-
-        h1 {
-          margin-top: 10px;
+        .seats {
+          overflow: auto;
+          max-height: 65vh;
         }
-
-        .price {
-          color: #bbb;
-          margin-bottom: 10px;
-        }
-
-        .screen {
-          width: 90%;
-          max-width: 700px;
-          margin-bottom: 10px;
-          padding: 8px;
-          background: #222;
-          text-align: center;
-          border-radius: 0 0 40px 40px;
-          font-size: 12px;
-          letter-spacing: 2px;
-          color: #aaa;
-        }
-
-        /* 🔑 SCROLL FIX */
-        .seatViewport {
-          flex: 1;
-          width: 100%;
-          overflow-x: auto;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
-          border-top: 1px solid #111;
-          border-bottom: 1px solid #111;
-        }
-
-        .seating {
-          min-width: max-content;
-          padding: 10px 0;
-        }
-
         .row {
           display: flex;
-          justify-content: center;
-          margin-bottom: 10px;
-          min-width: max-content;
+          margin-bottom: 8px;
         }
-
-        .seatWrapper {
-          display: flex;
-          align-items: center;
-        }
-
         .seat {
-          width: 36px;
-          height: 30px;
-          margin: 3px;
-          font-size: 9px;
-          background: #444;
+          margin: 2px;
+          padding: 6px;
+          font-size: 10px;
+          background: #333;
           color: white;
           border: none;
-          border-radius: 6px;
-          cursor: pointer;
+          border-radius: 4px;
         }
-
         .seat.selected {
-          background: red;
+          background: #e50914;
         }
-
-        .aisle {
-          width: 26px;
+        .footer {
+          position: sticky;
+          bottom: 0;
+          background: black;
+          padding: 10px;
         }
-
-        .summary {
-          padding: 10px 0;
-          text-align: center;
-        }
-
-        .payBtn {
-          margin-top: 8px;
-          padding: 12px 36px;
-          font-size: 16px;
-          background: red;
+        .pay {
+          width: 100%;
+          padding: 14px;
+          background: #e50914;
           color: white;
           border: none;
           border-radius: 30px;
-          cursor: pointer;
-        }
-
-        .payBtn:hover {
-          background: darkred;
-        }
-
-        /* 📱 MOBILE TWEAKS */
-        @media (max-width: 768px) {
-          .seat {
-            width: 32px;
-            height: 28px;
-            font-size: 8px;
-          }
-
-          .aisle {
-            width: 22px;
-          }
+          font-size: 16px;
         }
       `}</style>
     </div>
