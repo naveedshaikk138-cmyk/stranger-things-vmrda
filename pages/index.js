@@ -5,13 +5,13 @@ export default function Home() {
 
   return (
     <div className="page">
-      {/* BACKGROUND EFFECT */}
-      <div className="ambient" />
+      {/* Blurred background fill */}
+      <div className="bg" />
 
-      {/* POSTER */}
+      {/* Sharp poster */}
       <div className="poster" />
 
-      {/* BUTTON */}
+      {/* Button */}
       <button className="bookBtn" onClick={() => router.push("/book")}>
         BOOK NOW
       </button>
@@ -25,33 +25,19 @@ export default function Home() {
           background: black;
         }
 
-        /* 🔥 THIS FILLS THE BLACK GAPS */
-        .ambient {
+        /* 🔥 FULL-SCREEN FILL (NO GAPS) */
+        .bg {
           position: absolute;
           inset: 0;
-          background:
-            radial-gradient(
-              circle at center,
-              rgba(255, 0, 0, 0.55),
-              rgba(0, 0, 0, 0.95) 70%
-            ),
-            linear-gradient(
-              180deg,
-              #3b0000,
-              #000000 60%
-            );
-          filter: blur(40px);
-          animation: pulse 5s ease-in-out infinite;
+          background-image: url("/poster-desktop.jpg.png");
+          background-size: cover;
+          background-position: center;
+          filter: blur(50px) brightness(0.7);
+          transform: scale(1.1);
           z-index: 0;
         }
 
-        @keyframes pulse {
-          0% { opacity: 0.6; }
-          50% { opacity: 1; }
-          100% { opacity: 0.6; }
-        }
-
-        /* POSTER */
+        /* 🖼 CLEAN POSTER */
         .poster {
           position: absolute;
           inset: 0;
@@ -59,17 +45,17 @@ export default function Home() {
           background-repeat: no-repeat;
           background-position: center;
           background-size: contain;
-          z-index: 2;
+          z-index: 1;
         }
 
-        /* BUTTON */
+        /* 🔘 BUTTON */
         .bookBtn {
           position: absolute;
-          z-index: 3;
+          z-index: 2;
           bottom: 8%;
           left: 50%;
           transform: translateX(-50%);
-          padding: 14px 40px;
+          padding: 14px 44px;
           font-size: 18px;
           font-weight: bold;
           background: red;
@@ -77,15 +63,16 @@ export default function Home() {
           border: none;
           border-radius: 30px;
           cursor: pointer;
-          box-shadow: 0 0 30px rgba(255,0,0,0.7);
+          box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
         }
 
         .bookBtn:hover {
           background: darkred;
         }
 
-        /* MOBILE */
+        /* 📱 MOBILE */
         @media (max-width: 768px) {
+          .bg,
           .poster {
             background-image: url("/poster-mobile.jpg.jpeg");
           }
