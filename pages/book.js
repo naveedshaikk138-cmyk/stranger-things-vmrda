@@ -1,62 +1,80 @@
 import { useState } from "react";
 
-const TOTAL_ROWS = 20; // A–T
+const ROWS = 20; // A to T
 const SEATS_PER_ROW = 30;
 const PRICE = 157;
-const MAX_SELECTION = 6;
+const MAX_SEATS = 6;
 
-// Vertical aisles AFTER these seat numbers
-const AISLE_AFTER_SEATS = [8, 22];
+// Vertical aisles after these seat numbers
+const AISLE_AFTER = [8, 22];
 
 export default function Book() {
   const [selectedSeats, setSelectedSeats] = useState([]);
 
   const toggleSeat = (seat) => {
     if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter((s) => s !== s || s !== seat));
-    } else {
-      if (selectedSeats.length >= MAX_SELECTION) {
-        alert("Maximum 6 seats allowed");
-        return;
-      }
-      setSelectedSeats([...selectedSeats, seat]);
+      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+      return;
     }
+
+    if (selectedSeats.length >= MAX_SEATS) {
+      alert("Maximum 6 seats allowed");
+      return;
+    }
+
+    setSelectedSeats([...selectedSeats, seat]);
+  };
+
+  const handlePay = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat");
+      return;
+    }
+
+    localStorage.setItem(
+      "booking",
+      JSON.stringify({
+        seats: selectedSeats,
+        total: selectedSeats.length * PRICE,
+      })
+    );
+
+    window.location.href = "/payment";
   };
 
   return (
-    <div className="wrapper">
-      <h1>🎟 Select Your Seats</h1>
-      <p className="price">₹{PRICE} per seat | Max {MAX_SELECTION} seats</p>
+    <div className="page">
+      <h1>Select Your Seats</h1>
+      <p className="price">₹{PRICE} per seat • Max {MAX_SEATS} seats</p>
 
       {/* SCREEN */}
       <div className="screen">SCREEN THIS SIDE</div>
 
-      {/* SCROLLABLE SEATING AREA */}
+      {/* SCROLLABLE SEAT AREA */}
       <div className="seatViewport">
         <div className="seating">
-          {Array.from({ length: TOTAL_ROWS }).map((_, rowIndex) => {
-            const rowLabel = String.fromCharCode(65 + rowIndex);
+          {Array.from({ length: ROWS }).map((_, rowIndex) => {
+            const rowLetter = String.fromCharCode(65 + rowIndex);
 
             return (
-              <div className="row" key={rowLabel}>
+              <div className="row" key={rowLetter}>
                 {Array.from({ length: SEATS_PER_ROW }).map((_, seatIndex) => {
                   const seatNumber = seatIndex + 1;
-                  const seat = `${rowLabel}${seatNumber}`;
+                  const seatId = `${rowLetter}${seatNumber}`;
 
                   return (
-                    <div className="seatWrapper" key={seat}>
+                    <div className="seatWrapper" key={seatId}>
                       <button
                         className={`seat ${
-                          selectedSeats.includes(seat) ? "selected" : ""
+                          selectedSeats.includes(seatId) ? "selected" : ""
                         }`}
-                        onClick={() => toggleSeat(seat)}
+                        onClick={() => toggleSeat(seatId)}
                       >
-                        {seat}
+                        {seatId}
                       </button>
 
-                      {/* VERTICAL AISLE */}
-                      {AISLE_AFTER_SEATS.includes(seatNumber) && (
-                        <div className="aisle-vertical" />
+                      {AISLE_AFTER.includes(seatNumber) && (
+                        <div className="aisle" />
                       )}
                     </div>
                   );
@@ -69,20 +87,31 @@ export default function Book() {
 
       {/* SUMMARY */}
       <div className="summary">
-        <p>Selected: {selectedSeats.join(", ") || "None"}</p>
+        <p>
+          Selected:{" "}
+          {selectedSeats.length > 0
+            ? selectedSeats.join(", ")
+            : "None"}
+        </p>
         <h2>Total: ₹{selectedSeats.length * PRICE}</h2>
-        <button className="payBtn">Pay Now</button>
+        <button className="payBtn" onClick={handlePay}>
+          Pay Now
+        </button>
       </div>
 
       <style jsx>{`
-        .wrapper {
+        .page {
           min-height: 100vh;
           background: black;
           color: white;
-          text-align: center;
-          padding: 12px;
           display: flex;
           flex-direction: column;
+          align-items: center;
+          padding: 10px;
+        }
+
+        h1 {
+          margin-top: 10px;
         }
 
         .price {
@@ -92,19 +121,21 @@ export default function Book() {
 
         .screen {
           width: 90%;
-          margin: 0 auto 12px;
-          padding: 10px;
+          max-width: 700px;
+          margin-bottom: 10px;
+          padding: 8px;
           background: #222;
-          border-radius: 0 0 50px 50px;
-          transform: perspective(400px) rotateX(-10deg);
+          text-align: center;
+          border-radius: 0 0 40px 40px;
           font-size: 12px;
           letter-spacing: 2px;
           color: #aaa;
         }
 
-        /* 🔑 KEY FIX */
+        /* 🔑 SCROLL FIX */
         .seatViewport {
           flex: 1;
+          width: 100%;
           overflow-x: auto;
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
@@ -130,10 +161,10 @@ export default function Book() {
         }
 
         .seat {
-          width: 38px;
-          height: 32px;
+          width: 36px;
+          height: 30px;
           margin: 3px;
-          font-size: 10px;
+          font-size: 9px;
           background: #444;
           color: white;
           border: none;
@@ -145,17 +176,18 @@ export default function Book() {
           background: red;
         }
 
-        .aisle-vertical {
-          width: 28px;
+        .aisle {
+          width: 26px;
         }
 
         .summary {
-          padding: 12px 0;
+          padding: 10px 0;
+          text-align: center;
         }
 
         .payBtn {
           margin-top: 8px;
-          padding: 12px 40px;
+          padding: 12px 36px;
           font-size: 16px;
           background: red;
           color: white;
@@ -164,15 +196,19 @@ export default function Book() {
           cursor: pointer;
         }
 
-        /* 📱 MOBILE OPTIMIZATION */
+        .payBtn:hover {
+          background: darkred;
+        }
+
+        /* 📱 MOBILE TWEAKS */
         @media (max-width: 768px) {
           .seat {
             width: 32px;
             height: 28px;
-            font-size: 9px;
+            font-size: 8px;
           }
 
-          .aisle-vertical {
+          .aisle {
             width: 22px;
           }
         }
